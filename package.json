@@ -1,6 +1,6 @@
 {
   "name": "jest-mock-knex",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Jest mock for knex",
   "main": "lib/index.js",
   "scripts": {
@@ -19,7 +19,8 @@
   },
   "homepage": "https://github.com/yutin1987/jest-mock-knex#readme",
   "files": [
-    "lib"
+    "lib",
+    "serializer.js"
   ],
   "devDependencies": {
     "babel-cli": "^6.23.0",
