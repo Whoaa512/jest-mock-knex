@@ -69,7 +69,7 @@ export class client extends Client {
       client.sql.push(this._formatQuery(builder.sql, _.map(
         builder.bindings,
         value => (value instanceof Date ? 'DATE' : value),
-      )));
+      )).replace(/"/gi, ''));
 
       return Promise.resolve(query(parser(builder)));
     };
