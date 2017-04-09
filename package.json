@@ -1,0 +1,49 @@
+{
+  "name": "jest-mock-knex",
+  "version": "1.0.0",
+  "description": "Jest mock for knex",
+  "main": "lib/index.js",
+  "scripts": {
+    "prepublish": "npm run build",
+    "test": "eslint ./src; jest --coverage ./src",
+    "build": "rm -rf lib/* && babel src --ignore __tests__ --out-dir lib && babel src/serializer.js -o serializer.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yutin1987/jest-mock-knex.git"
+  },
+  "author": "YuTin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yutin1987/jest-mock-knex/issues"
+  },
+  "homepage": "https://github.com/yutin1987/jest-mock-knex#readme",
+  "files": [
+    "lib"
+  ],
+  "devDependencies": {
+    "babel-cli": "^6.23.0",
+    "babel-core": "^6.23.1",
+    "babel-eslint": "^7.1.1",
+    "babel-jest": "^19.0.0",
+    "babel-polyfill": "^6.23.0",
+    "babel-preset-react-native": "^1.9.1",
+    "bookshelf": "^0.10.3",
+    "eslint": "^3.15.0",
+    "eslint-config-airbnb": "^14.1.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^4.0.0",
+    "eslint-plugin-react": "^6.9.0",
+    "faker": "^4.1.0",
+    "jest": "^19.0.2",
+    "knex": "^0.12.9"
+  },
+  "dependencies": {
+    "lodash": "^4.17.4"
+  },
+  "jest": {
+    "snapshotSerializers": [
+      "<rootDir>/src/serializer"
+    ]
+  }
+}
