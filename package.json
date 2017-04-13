@@ -1,12 +1,12 @@
 {
   "name": "jest-mock-knex",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Jest mock for knex",
   "main": "lib/index.js",
   "scripts": {
     "prepublish": "npm run build",
     "test": "eslint ./src; jest --coverage ./src",
-    "build": "rm -rf lib/* && babel src --ignore __tests__ --out-dir lib && babel src/serializer.js -o serializer.js"
+    "build": "rm -rf lib && babel src --ignore test.js --out-dir lib && babel src/serializer.js -o serializer.js"
   },
   "repository": {
     "type": "git",
