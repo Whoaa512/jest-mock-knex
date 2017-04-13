@@ -1,13 +1,7 @@
 /* eslint no-underscore-dangle: ["error", { "allow": ["_query", "_formatQuery"] }] */
 
 import _ from 'lodash';
-import Knex from 'knex/knex';
-
-const knex = Knex({
-  client: 'sqlite3',
-  connection: { filename: ':memory:' },
-  useNullAsDefault: true,
-});
+import sqlite3 from 'knex/lib/dialects/sqlite3';
 
 export const parser = (builder) => {
   const regex = /^insert /i.test(builder.sql) ? /"[\w_-]+"[,)]/gi : /"?([\w_]+)"?[ =]+\?/gi;
@@ -32,7 +26,7 @@ export const parser = (builder) => {
 
 export const query = jest.fn(() => false);
 
-export class client extends Knex.Client {
+export class client extends sqlite3 {
 
   static mockName = 'knex';
 
@@ -68,34 +62,30 @@ export class client extends Knex.Client {
 
   static toJSON = () => client.sql;
 
-  constructor(...args) {
-    super(...args);
-
-    this._query = async (connection, builder) => {
-      client.sql.push(this._formatQuery(builder.sql, _.map(
-        builder.bindings,
-        value => (value instanceof Date ? 'DATE' : value),
-      )).replace(/"/gi, ''));
-
-      const reply = query(parser(builder));
-
-      if (_.isArray(reply)) {
-        return reply;
-      }
-
-      return knex.raw(builder.sql, builder.bindings);
-    };
+  constructor(config) {
+    _.defaults(config, {
+      connection: { filename: ':memory:' },
+      useNullAsDefault: true,
+    });
+    super(config);
   }
 
-  schemaBuilder = () => knex.client.schemaBuilder();
+  async _query(connection, builder) {
+    client.sql.push(this._formatQuery(builder.sql, _.map(
+      builder.bindings,
+      value => (value instanceof Date ? 'DATE' : value),
+    )).replace(/"/gi, ''));
 
-  schemaCompiler = (...args) => knex.client.schemaCompiler(...args);
+    const reply = query(parser(builder));
 
-  acquireConnection = () => Promise.resolve({});
+    if (_.isArray(reply)) {
+      return reply;
+    }
+
+    return super.processResponse(await super._query(connection, builder));
+  }
 
   processResponse = resp => resp;
-
-  releaseConnection = () => Promise.resolve();
 }
 
 export { client as default };
