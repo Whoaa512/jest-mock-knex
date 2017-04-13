@@ -1,7 +1,13 @@
 /* eslint no-underscore-dangle: ["error", { "allow": ["_query", "_formatQuery"] }] */
 
 import _ from 'lodash';
-import Client from 'knex/lib/client';
+import Knex from 'knex';
+
+const knex = Knex({
+  client: 'sqlite3',
+  connection: { filename: ':memory:' },
+  useNullAsDefault: true,
+});
 
 export const parser = (builder) => {
   const regex = /^insert /i.test(builder.sql) ? /"[\w_-]+"[,)]/gi : /"?([\w_]+)"?[ =]+\?/gi;
@@ -24,9 +30,9 @@ export const parser = (builder) => {
   };
 };
 
-export const query = jest.fn(() => []);
+export const query = jest.fn(() => false);
 
-export class client extends Client {
+export class client extends Knex.Client {
 
   static mockName = 'knex';
 
@@ -65,15 +71,23 @@ export class client extends Client {
   constructor(...args) {
     super(...args);
 
-    this._query = (connection, builder) => {
+    this._query = async (connection, builder) => {
       client.sql.push(this._formatQuery(builder.sql, _.map(
         builder.bindings,
         value => (value instanceof Date ? 'DATE' : value),
       )).replace(/"/gi, ''));
 
-      return Promise.resolve(query(parser(builder)));
+      const reply = query(parser(builder));
+
+      if (_.isArray(reply)) {
+        return reply;
+      }
+
+      return knex.raw(builder.sql, builder.bindings);
     };
   }
+
+  schemaBuilder = () => knex.client.schemaBuilder();
 
   acquireConnection = () => Promise.resolve({});
 
@@ -81,3 +95,5 @@ export class client extends Client {
 
   releaseConnection = () => Promise.resolve();
 }
+
+export { client as default };

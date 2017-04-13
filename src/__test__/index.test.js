@@ -74,16 +74,16 @@ describe('jest-mock-knex', () => {
     }));
 
     client.mockClear();
-    client.mockReturnValue(1);
-    expect(await builder.update({ name, value, at })).toBe(1);
+    client.mockReturnValue([1]);
+    expect(await builder.update({ name, value, at })).toEqual([1]);
     expect(client).toHaveBeenCalledTimes(1);
     expect(client).toHaveBeenLastCalledWith(expect.objectContaining({
       method: 'update', table, id, name, value, at: expect.any(Date), deleted_at: 'NULL', nickname: 'NOT NULL',
     }));
 
     client.mockReset();
-    client.mockReturnValueOnce(1);
-    expect(await builder.delete()).toBe(1);
+    client.mockReturnValueOnce([1]);
+    expect(await builder.delete()).toEqual([1]);
     expect(client).toHaveBeenCalledTimes(1);
     expect(client).toHaveBeenLastCalledWith(expect.objectContaining({
       method: 'delete', table, id, at: expect.any(Date), deleted_at: 'NULL', nickname: 'NOT NULL',
@@ -110,19 +110,38 @@ describe('jest-mock-knex', () => {
     expect(client).toHaveBeenCalledTimes(1);
 
     client.mockClear();
-    client.mockReturnValue(1);
+    client.mockReturnValue([1]);
     expect(
       (await new User({ id, name, value }).save()).toJSON(),
     ).toMatchObject({ id, name, value });
     expect(client).toHaveBeenCalledTimes(1);
 
     client.mockReset();
-    client.mockReturnValueOnce(1);
+    client.mockReturnValueOnce([1]);
     expect(
       (await new User({ id }).destroy()).toJSON(),
     ).toEqual({});
     expect(client).toHaveBeenCalledTimes(1);
 
     client.mockReturnThis();
+  });
+
+  it('sqlite3', async () => {
+    const tableName = faker.lorem.word();
+    const name = faker.lorem.word();
+
+    client.mockClear();
+
+    await db.schema.createTable(tableName, (table) => {
+      table.increments();
+      table.string('name');
+      table.timestamps();
+    });
+
+    await db(tableName).insert({ name });
+
+    expect(await db(tableName).where({ id: 1 })).toEqual([{
+      id: 1, name, created_at: null, updated_at: null,
+    }]);
   });
 });
