@@ -1,7 +1,7 @@
 /* eslint no-underscore-dangle: ["error", { "allow": ["_query", "_formatQuery"] }] */
 
 import _ from 'lodash';
-import Knex from 'knex';
+import Knex from 'knex/knex';
 
 const knex = Knex({
   client: 'sqlite3',
@@ -88,6 +88,8 @@ export class client extends Knex.Client {
   }
 
   schemaBuilder = () => knex.client.schemaBuilder();
+
+  schemaCompiler = (...args) => knex.client.schemaCompiler(...args);
 
   acquireConnection = () => Promise.resolve({});
 
