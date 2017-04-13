@@ -76,16 +76,16 @@ export class client extends sqlite3 {
       value => (value instanceof Date ? 'DATE' : value),
     )).replace(/"/gi, ''));
 
-    const reply = query(parser(builder));
+    const mock = query(parser(builder));
 
-    if (_.isArray(reply)) {
-      return reply;
+    if (_.isArray(mock)) {
+      return { response: mock };
     }
 
-    return super.processResponse(await super._query(connection, builder));
-  }
+    const reply = await super._query(connection, builder);
 
-  processResponse = resp => resp;
+    return reply;
+  }
 }
 
 export { client as default };
