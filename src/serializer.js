@@ -1,8 +1,8 @@
 module.exports = {
-  test(client) {
-    return client && client.mockName === 'knex';
+  test(query) {
+    return query && query.mockName === 'knex';
   },
-  print(client, serializer) {
-    return serializer(client.toJSON());
+  print(query, serializer) {
+    return serializer(query.toJSON());
   },
 };

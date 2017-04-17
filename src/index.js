@@ -1,9 +1,9 @@
 /* eslint no-underscore-dangle: ["error", { "allow": ["_query", "_formatQuery"] }] */
 
 import _ from 'lodash';
-import sqlite3 from 'knex/lib/dialects/sqlite3';
+import knex from 'knex/knex';
 
-export const parser = (builder) => {
+export const parser = (builder, sql) => {
   const regex = /^insert /i.test(builder.sql) ? /"[\w_-]+"[,)]/gi : /"?([\w_]+)"?[ =]+\?/gi;
   const keys = _.map(builder.sql.match(regex), key => /([\w_]+)/gi.exec(key)[1]);
 
@@ -21,71 +21,32 @@ export const parser = (builder) => {
     ...whereNull,
     table: table && table[2],
     method: builder.method === 'del' ? 'delete' : builder.method,
+    sql,
   };
 };
 
-export const query = jest.fn(() => false);
+export const client = jest.fn(() => false);
+client.mockName = 'knex';
+client.toJSON = () => _.map(client.mock.calls, item => item[0].sql);
 
-export class client extends sqlite3 {
+export default function mock(config) {
+  const db = knex(config);
 
-  static mockName = 'knex';
-
-  static query = query;
-
-  static sql = [];
-
-  static mock = query.mock;
-
-  static _isMockFunction = true;
-
-  static mockClear = () => {
-    query.mockClear();
-    client.mock = query.mock;
-    client.sql = [];
-  }
-
-  static mockReset = () => {
-    query.mockReset();
-    client.mock = query.mock;
-    client.sql = [];
-  }
-
-  static mockImplementation = (...args) => query.mockImplementation(...args);
-
-  static mockImplementationOnce = (...args) => query.mockImplementationOnce(...args);
-
-  static mockReturnThis = (...args) => query.mockReturnThis(...args);
-
-  static mockReturnValue = (...args) => query.mockReturnValue(...args);
-
-  static mockReturnValueOnce = (...args) => query.mockReturnValueOnce(...args);
-
-  static toJSON = () => client.sql;
-
-  constructor(config) {
-    _.defaults(config, {
-      connection: { filename: ':memory:' },
-      useNullAsDefault: true,
-    });
-    super(config);
-  }
-
-  async _query(connection, builder) {
-    client.sql.push(this._formatQuery(builder.sql, _.map(
+  const _query = db.client._query;
+  db.client._query = async (connection, builder) => {
+    const sql = db.client._formatQuery(builder.sql, _.map(
       builder.bindings,
       value => (value instanceof Date ? 'DATE' : value),
-    )).replace(/"/gi, ''));
+    )).replace(/"/gi, '');
 
-    const mock = query(parser(builder));
+    const fn = client(parser(builder, sql));
 
-    if (_.isArray(mock)) {
-      return { response: mock };
+    if (_.isArray(fn)) {
+      return { response: fn };
     }
+ 
+    return _query(connection, builder).bind(db.client);
+  };
 
-    const reply = await super._query(connection, builder);
-
-    return reply;
-  }
+  return db;
 }
-
-export { client as default };

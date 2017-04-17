@@ -1,7 +1,7 @@
 module.exports={
-test:function test(client){
-return client&&client.mockName==='knex';
+test:function test(query){
+return query&&query.mockName==='knex';
 },
-print:function print(client,serializer){
-return serializer(client.toJSON());
+print:function print(query,serializer){
+return serializer(query.toJSON());
 }};

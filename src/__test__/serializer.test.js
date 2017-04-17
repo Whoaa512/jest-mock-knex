@@ -1,9 +1,12 @@
-import knex from 'knex';
 import bookshelf from 'bookshelf';
 import faker from 'faker';
-import { client } from '../';
+import knex, { client } from '../';
 
-const db = knex({ client });
+const db = knex({
+  client: 'sqlite',
+  connection: { filename: ':memory:' },
+  useNullAsDefault: true,
+});
 const { Model } = bookshelf(db);
 
 const User = Model.extend({
@@ -21,6 +24,10 @@ describe('serializer', () => {
     const at = faker.date.future();
 
     client.mockClear();
+    client.mockReturnValueOnce([]);
+    client.mockReturnValueOnce([]);
+    client.mockReturnValueOnce([]);
+    client.mockReturnValueOnce([]);
 
     const builder = db(table)
       .where({ id, at })
@@ -43,6 +50,10 @@ describe('serializer', () => {
     const at = faker.date.future();
 
     client.mockClear();
+    client.mockReturnValueOnce([]);
+    client.mockReturnValueOnce([]);
+    client.mockReturnValueOnce([]);
+    client.mockReturnValueOnce([]);
 
     await User.fetchAll();
     await new User({ at, name, value }).save();

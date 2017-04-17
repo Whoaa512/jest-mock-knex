@@ -1,9 +1,12 @@
-import knex from 'knex';
 import bookshelf from 'bookshelf';
 import faker from 'faker';
-import { parser, client } from '../';
+import knex, { parser, client } from '../';
 
-const db = knex({ client });
+const db = knex({
+  client: 'sqlite',
+  connection: { filename: ':memory:' },
+  useNullAsDefault: true,
+});
 const { Model } = bookshelf(db);
 
 const User = Model.extend({
