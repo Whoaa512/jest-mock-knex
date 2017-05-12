@@ -129,7 +129,7 @@ describe('jest-mock-knex', () => {
     client.mockReturnThis();
   });
 
-  it('sqlite3', async () => {
+  it('Sqlite3', async () => {
     const tableName = faker.lorem.word();
     const name = faker.lorem.word();
 
@@ -144,6 +144,37 @@ describe('jest-mock-knex', () => {
     await db(tableName).insert({ name });
 
     expect(await db(tableName).where({ id: 1 })).toEqual([{
+      id: 1, name, created_at: null, updated_at: null,
+    }]);
+  });
+
+  it('PostgreSQL', async () => {
+    const pg = knex({
+      client: 'pg',
+      connection: process.env.DATABASE_URL || {
+        host: '127.0.0.1',
+        user: 'postgres',
+        password: null,
+        database: 'mock',
+      },
+    });
+
+    const tableName = 'mtable';
+    const name = faker.lorem.word();
+
+    client.mockClear();
+
+    await pg.schema.dropTableIfExists(tableName);
+
+    await pg.schema.createTable(tableName, (table) => {
+      table.increments();
+      table.string('name');
+      table.timestamps();
+    });
+
+    await pg(tableName).insert({ name });
+
+    expect(await pg(tableName).where({ id: 1 })).toEqual([{
       id: 1, name, created_at: null, updated_at: null,
     }]);
   });
