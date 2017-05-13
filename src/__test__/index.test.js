@@ -16,7 +16,7 @@ const User = Model.extend({
 
 describe('jest-mock-knex', () => {
   it('parser', async () => {
-    const id = faker.random.number();
+    const id = [faker.random.number(), faker.random.number()];
     const at = faker.date.future();
     const table = faker.lorem.word();
     const limit = faker.random.number();
@@ -24,7 +24,8 @@ describe('jest-mock-knex', () => {
     const value = faker.random.number();
 
     const builder = db(table)
-      .where({ id, at })
+      .where({ at })
+      .whereIn('id', id)
       .whereNull('deleted_at')
       .whereNotNull('nickname')
       .limit(limit);

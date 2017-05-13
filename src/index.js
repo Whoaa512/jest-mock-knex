@@ -5,21 +5,36 @@ import _ from 'lodash';
 const knex = require.requireActual('knex');
 
 export const parser = (builder, sql) => {
-  const regex = /^insert /i.test(builder.sql) ? /"[\w_-]+"[,)]/gi : /"?([\w_]+)"?[ =]+\?/gi;
-  const keys = _.map(builder.sql.match(regex), key => /([\w_]+)/gi.exec(key)[1]);
+  const data = {};
+  const bindings = _.clone(builder.bindings);
 
-  const whereNull = {};
-  const nullRegex = /"?([\w_]+)" (is not null|is null)/gi;
-  do {
-    const nullColumn = nullRegex.exec(builder.sql);
-    if (nullColumn) whereNull[nullColumn[1]] = (nullColumn[2] === 'is null' ? 'NULL' : 'NOT NULL');
-  } while (nullRegex.lastIndex !== 0);
+  if (/^insert /i.test(builder.sql)) {
+    const valueRegex = /"?([\w_]+)"?[,)]/gi;
+    do {
+      const valueColumn = valueRegex.exec(builder.sql);
+      if (valueColumn) data[valueColumn[1]] = bindings.shift();
+    } while (valueRegex.lastIndex !== 0);
+  } else if (/^(select|update|delete) /i.test(builder.sql)) {
+    const whereRegex = /"?([\w_]+)"?( = | in | )([(?, )]+)/gi;
+    do {
+      const whereColumn = whereRegex.exec(builder.sql);
+      if (whereColumn) {
+        const values = _.toArray(whereColumn[3].match(/\?/gi)).map(() => bindings.shift());
+        data[whereColumn[1]] = values.length > 1 ? values : values[0];
+      }
+    } while (whereRegex.lastIndex !== 0);
+
+    const nullRegex = /"?([\w_]+)"? (is not null|is null)/gi;
+    do {
+      const nullColumn = nullRegex.exec(builder.sql);
+      if (nullColumn) data[nullColumn[1]] = (nullColumn[2] === 'is null' ? 'NULL' : 'NOT NULL');
+    } while (nullRegex.lastIndex !== 0);
+  }
 
   const table = /(insert into|update|from) "([^"]+)"/i.exec(builder.sql);
 
   return {
-    ..._.mapValues(_.invert(keys), index => builder.bindings[index]),
-    ...whereNull,
+    ...data,
     table: table && table[2],
     method: builder.method === 'del' ? 'delete' : builder.method,
     sql,
