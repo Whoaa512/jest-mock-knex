@@ -1,8 +1,7 @@
 /* eslint no-underscore-dangle: ["error", { "allow": ["_query", "_formatQuery"] }] */
 
 import _ from 'lodash';
-
-const knex = require.requireActual('knex');
+import knex from 'knex/knex';
 
 export const parser = (builder, sql) => {
   const data = {};
