@@ -2,11 +2,7 @@ import bookshelf from 'bookshelf';
 import faker from 'faker';
 import knex, { parser, client } from '../';
 
-const db = knex({
-  client: 'sqlite',
-  connection: { filename: ':memory:' },
-  useNullAsDefault: true,
-});
+const db = knex();
 const { Model } = bookshelf(db);
 
 const User = Model.extend({
@@ -131,20 +127,27 @@ describe('jest-mock-knex', () => {
   });
 
   it('Sqlite3', async () => {
+    const sqlite = knex({
+      client: 'sqlite',
+      connection: { filename: ':memory:' },
+      useNullAsDefault: true,
+    });
+
     const tableName = faker.lorem.word();
     const name = faker.lorem.word();
 
+    client.mockReset();
     client.mockClear();
 
-    await db.schema.createTable(tableName, (table) => {
+    await sqlite.schema.createTable(tableName, (table) => {
       table.increments();
       table.string('name');
       table.timestamps();
     });
 
-    await db(tableName).insert({ name });
+    await sqlite(tableName).insert({ name });
 
-    expect(await db(tableName).where({ id: 1 })).toEqual([{
+    expect(await sqlite(tableName).where({ id: 1 })).toEqual([{
       id: 1, name, created_at: null, updated_at: null,
     }]);
   });

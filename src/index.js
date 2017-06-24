@@ -59,7 +59,13 @@ async function query(connection, builder) {
   return this.__query(connection, builder); // eslint-disable-line
 }
 
-export default function mock(config) {
+class MockClient extends knex.Client {
+  async acquireConnection() { return { __knexUid: 1 }; } // eslint-disable-line
+  async releaseConnection() { } // eslint-disable-line
+  processResponse({ response }) { return response; } // eslint-disable-line
+}
+
+export default function mock(config = { client: MockClient }) {
   const db = knex(config);
 
   _.set(db, 'client.__query', db.client._query);

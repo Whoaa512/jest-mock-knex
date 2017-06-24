@@ -1,6 +1,6 @@
 {
   "name": "jest-mock-knex",
-  "version": "1.4.2",
+  "version": "1.5.0",
   "description": "Jest mock for knex",
   "main": "lib/index.js",
   "scripts": {
@@ -36,8 +36,8 @@
     "eslint-plugin-jsx-a11y": "^4.0.0",
     "eslint-plugin-react": "^6.9.0",
     "faker": "^4.1.0",
-    "jest": "^19.0.2",
-    "knex": "^0.12.9",
+    "jest": "^20.0.4",
+    "knex": "^0.13.0",
     "sqlite3": "^3.1.8"
   },
   "dependencies": {
