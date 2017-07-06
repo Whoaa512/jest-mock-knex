@@ -126,6 +126,16 @@ describe('jest-mock-knex', () => {
     client.mockReturnThis();
   });
 
+  it('bookshelf when throw error', async () => {
+    const name = faker.lorem.word();
+
+    client.mockClear();
+    client.mockReturnValueOnce(new Error('sql error'));
+    const user = new User({ name });
+    await expect(user.save()).rejects.toMatchSnapshot();
+    expect(client).toHaveBeenCalledTimes(1);
+  });
+
   it('Sqlite3', async () => {
     const sqlite = knex({
       client: 'sqlite',

@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "prepublish": "npm run build",
-    "test": "eslint ./src; jest --coverage ./src",
+    "test": "eslint ./src; jest --coverage --forceExit ./src",
     "build": "rm -rf lib && babel src --ignore test.js --out-dir lib && babel src/serializer.js -o serializer.js"
   },
   "repository": {
@@ -29,6 +29,7 @@
     "babel-jest": "^19.0.0",
     "babel-polyfill": "^6.23.0",
     "babel-preset-react-native": "^1.9.1",
+    "bluebird": "^3.5.0",
     "bookshelf": "^0.10.3",
     "eslint": "^3.15.0",
     "eslint-config-airbnb": "^14.1.0",

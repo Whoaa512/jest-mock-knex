@@ -1,6 +1,7 @@
 /* eslint no-underscore-dangle: ["error", { "allow": ["_query", "_formatQuery"] }] */
 
 import _ from 'lodash';
+import Promise from 'bluebird';
 import knex from 'knex/knex';
 
 export const parser = (builder, sql) => {
@@ -44,7 +45,7 @@ export const client = jest.fn(() => false);
 client.mockName = 'knex';
 client.toJSON = () => _.map(client.mock.calls, item => item[0].sql);
 
-async function query(connection, builder) {
+function query(connection, builder) {
   const sql = this._formatQuery(builder.sql, _.map(
     builder.bindings,
     value => (value instanceof Date ? 'DATE' : value),
@@ -53,7 +54,11 @@ async function query(connection, builder) {
   const fn = client(parser(builder, sql));
 
   if (_.isArray(fn)) {
-    return { response: fn };
+    return Promise.resolve({ response: fn });
+  }
+
+  if (fn instanceof Error) {
+    return Promise.reject(fn);
   }
 
   return this.__query(connection, builder); // eslint-disable-line
