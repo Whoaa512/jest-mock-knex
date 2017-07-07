@@ -68,6 +68,7 @@ class MockClient extends knex.Client {
   async acquireConnection() { return { __knexUid: 1 }; } // eslint-disable-line
   async releaseConnection() { } // eslint-disable-line
   processResponse({ response }) { return response; } // eslint-disable-line
+  _query() { return Promise.resolve({ response: [] }); } // eslint-disable-line
 }
 
 export default function mock(config = { client: MockClient }) {
