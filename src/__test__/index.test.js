@@ -127,11 +127,16 @@ describe('jest-mock-knex', () => {
   });
 
   it('bookshelf when throw error', async () => {
-    const name = faker.lorem.word();
+    const name = 'I\'m error';
+
+    const Table = Model.extend({
+      tableName: 'table',
+      hasTimestamps: false,
+    });
 
     client.mockClear();
     client.mockReturnValueOnce(new Error('sql error'));
-    const user = new User({ name });
+    const user = new Table({ name });
     await expect(user.save()).rejects.toMatchSnapshot();
     expect(client).toHaveBeenCalledTimes(1);
   });
@@ -165,7 +170,7 @@ describe('jest-mock-knex', () => {
   it('PostgreSQL', async () => {
     const pg = knex({
       client: 'pg',
-      connection: process.env.DATABASE_URL || {
+      connection: {
         host: '127.0.0.1',
         user: 'postgres',
         password: null,
