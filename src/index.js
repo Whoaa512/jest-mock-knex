@@ -54,7 +54,11 @@ function query(connection, builder) {
   const fn = client(parser(builder, sql));
 
   if (_.isArray(fn)) {
-    return Promise.resolve({ response: fn });
+    return Promise.resolve({
+      response: _.map(fn, item => (
+        _.isPlainObject(item) ? _.mapValues(item, value => _.toString(value)) : _.toString(item)
+      )),
+    });
   }
 
   if (fn instanceof Error) {
