@@ -45,6 +45,10 @@ export const client = jest.fn(() => false);
 client.mockName = 'knex';
 client.toJSON = () => _.map(client.mock.calls, item => item[0].sql);
 
+function toString(value) {
+  return _.isNumber(value) ? _.toString(value) : value;
+}
+
 function query(connection, builder) {
   const sql = this._formatQuery(builder.sql, _.map(
     builder.bindings,
@@ -56,7 +60,7 @@ function query(connection, builder) {
   if (_.isArray(fn)) {
     return Promise.resolve({
       response: _.map(fn, item => (
-        _.isPlainObject(item) ? _.mapValues(item, value => _.toString(value)) : _.toString(item)
+        _.isPlainObject(item) ? _.mapValues(item, value => toString(value)) : toString(item)
       )),
     });
   }
