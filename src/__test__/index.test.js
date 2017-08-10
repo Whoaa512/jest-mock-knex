@@ -59,7 +59,7 @@ describe('jest-mock-knex', () => {
 
     client.mockClear();
     client.mockImplementation(() => [{ id, name, value }]);
-    expect(await builder.select('*')).toEqual([{ id: `${id}`, name, value: `${value}` }]);
+    expect(await builder.select('*')).toEqual([{ id, name, value }]);
     expect(client).toHaveBeenCalledTimes(1);
     expect(client).toHaveBeenLastCalledWith(expect.objectContaining({
       method: 'select', table, id, at: expect.any(Date), limit, deleted_at: 'NULL', nickname: 'NOT NULL',
@@ -67,7 +67,7 @@ describe('jest-mock-knex', () => {
 
     client.mockReset();
     client.mockImplementationOnce(() => [id]);
-    expect(await builder.insert({ name, value, at })).toEqual([`${id}`]);
+    expect(await builder.insert({ name, value, at })).toEqual([id]);
     expect(client).toHaveBeenCalledTimes(1);
     expect(client).toHaveBeenLastCalledWith(expect.objectContaining({
       method: 'insert', table, name, value, at: expect.any(Date),
@@ -75,7 +75,7 @@ describe('jest-mock-knex', () => {
 
     client.mockClear();
     client.mockReturnValue([1]);
-    expect(await builder.update({ name, value, at })).toEqual(['1']);
+    expect(await builder.update({ name, value, at })).toEqual([1]);
     expect(client).toHaveBeenCalledTimes(1);
     expect(client).toHaveBeenLastCalledWith(expect.objectContaining({
       method: 'update', table, id, name, value, at: expect.any(Date), deleted_at: 'NULL', nickname: 'NOT NULL',
@@ -83,7 +83,7 @@ describe('jest-mock-knex', () => {
 
     client.mockReset();
     client.mockReturnValueOnce([1]);
-    expect(await builder.delete()).toEqual(['1']);
+    expect(await builder.delete()).toEqual([1]);
     expect(client).toHaveBeenCalledTimes(1);
     expect(client).toHaveBeenLastCalledWith(expect.objectContaining({
       method: 'delete', table, id, at: expect.any(Date), deleted_at: 'NULL', nickname: 'NOT NULL',
@@ -99,14 +99,14 @@ describe('jest-mock-knex', () => {
     client.mockImplementation(() => [id]);
     expect(
       (await new User({ name, value }).save()).toJSON(),
-    ).toMatchObject({ id: `${id}`, name, value });
+    ).toMatchObject({ id, name, value });
     expect(client).toHaveBeenCalledTimes(1);
 
     client.mockReset();
     client.mockImplementationOnce(() => [{ id, name, value }]);
     expect(
       (await User.fetchAll()).toJSON(),
-    ).toEqual([{ id: `${id}`, name, value: `${value}` }]);
+    ).toEqual([{ id, name, value }]);
     expect(client).toHaveBeenCalledTimes(1);
 
     client.mockClear();
