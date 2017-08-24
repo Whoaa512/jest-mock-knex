@@ -15,9 +15,9 @@ describe('jest-mock-knex', () => {
     const id = [faker.random.number(), faker.random.number()];
     const at = faker.date.future();
     const table = faker.lorem.word();
-    const limit = faker.random.number();
+    const limit = faker.random.number().toString();
     const name = faker.lorem.word();
-    const value = faker.random.number();
+    const value = faker.random.number().toString();
 
     const builder = db(table)
       .where({ at })
@@ -26,30 +26,30 @@ describe('jest-mock-knex', () => {
       .whereNotNull('nickname')
       .limit(limit);
 
-    expect(parser(builder.select('*').toSQL())).toEqual({
-      method: 'select', table, id, at, limit, deleted_at: 'NULL', nickname: 'NOT NULL',
-    });
+    expect(parser(builder.select('*').toSQL())).toEqual(expect.objectContaining({
+      method: 'select', table, id: `(${id.join(', ')})`, at: 'DATE', limit, deleted_at: 'null', nickname: 'not null',
+    }));
 
-    expect(parser(builder.insert({ name, value, at }).toSQL())).toEqual({
-      method: 'insert', table, name, value, at,
-    });
+    expect(parser(builder.insert({ name, value, at }).toSQL())).toEqual(expect.objectContaining({
+      method: 'insert', table, name, value, at: 'DATE',
+    }));
 
-    expect(parser(builder.update({ name, value, at }).toSQL())).toEqual({
-      method: 'update', table, id, name, value, at, deleted_at: 'NULL', nickname: 'NOT NULL',
-    });
+    expect(parser(builder.update({ name, value, at }).toSQL())).toEqual(expect.objectContaining({
+      method: 'update', table, id: `(${id.join(', ')})`, name, value, at: 'DATE', deleted_at: 'null', nickname: 'not null',
+    }));
 
-    expect(parser(builder.delete().toSQL())).toEqual({
-      method: 'delete', table, id, at, deleted_at: 'NULL', nickname: 'NOT NULL',
-    });
+    expect(parser(builder.delete().toSQL())).toEqual(expect.objectContaining({
+      method: 'delete', table, id: `(${id.join(', ')})`, at: 'DATE', deleted_at: 'null', nickname: 'not null',
+    }));
   });
 
   it('client', async () => {
-    const id = faker.random.number();
+    const id = faker.random.number().toString();
     const at = faker.date.future();
     const table = faker.lorem.word();
-    const limit = faker.random.number();
+    const limit = faker.random.number().toString();
     const name = faker.lorem.word();
-    const value = faker.random.number();
+    const value = faker.random.number().toString();
 
     const builder = db(table)
       .where({ id, at })
@@ -62,7 +62,7 @@ describe('jest-mock-knex', () => {
     expect(await builder.select('*')).toEqual([{ id, name, value }]);
     expect(client).toHaveBeenCalledTimes(1);
     expect(client).toHaveBeenLastCalledWith(expect.objectContaining({
-      method: 'select', table, id, at: expect.any(Date), limit, deleted_at: 'NULL', nickname: 'NOT NULL',
+      method: 'select', table, id, at: 'DATE', limit, deleted_at: 'null', nickname: 'not null',
     }));
 
     client.mockReset();
@@ -70,7 +70,7 @@ describe('jest-mock-knex', () => {
     expect(await builder.insert({ name, value, at })).toEqual([id]);
     expect(client).toHaveBeenCalledTimes(1);
     expect(client).toHaveBeenLastCalledWith(expect.objectContaining({
-      method: 'insert', table, name, value, at: expect.any(Date),
+      method: 'insert', table, name, value, at: 'DATE',
     }));
 
     client.mockClear();
@@ -78,7 +78,7 @@ describe('jest-mock-knex', () => {
     expect(await builder.update({ name, value, at })).toEqual([1]);
     expect(client).toHaveBeenCalledTimes(1);
     expect(client).toHaveBeenLastCalledWith(expect.objectContaining({
-      method: 'update', table, id, name, value, at: expect.any(Date), deleted_at: 'NULL', nickname: 'NOT NULL',
+      method: 'update', table, id, name, value, at: 'DATE', deleted_at: 'null', nickname: 'not null',
     }));
 
     client.mockReset();
@@ -86,7 +86,7 @@ describe('jest-mock-knex', () => {
     expect(await builder.delete()).toEqual([1]);
     expect(client).toHaveBeenCalledTimes(1);
     expect(client).toHaveBeenLastCalledWith(expect.objectContaining({
-      method: 'delete', table, id, at: expect.any(Date), deleted_at: 'NULL', nickname: 'NOT NULL',
+      method: 'delete', table, id, at: 'DATE', deleted_at: 'null', nickname: 'not null',
     }));
   });
 

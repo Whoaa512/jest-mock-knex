@@ -4,39 +4,62 @@ import _ from 'lodash';
 import Promise from 'bluebird';
 import knex from 'knex/knex';
 
-export const parser = (builder, sql) => {
-  const data = {};
+export const parser = (builder) => {
   const bindings = _.clone(builder.bindings);
+  const sql = _.replace(builder.sql, /"|\?/gi, (key) => {
+    if (key !== '?') return '';
 
-  if (/^insert /i.test(builder.sql)) {
-    const valueRegex = /"?([\w_]+)"?[,)]/gi;
-    do {
-      const valueColumn = valueRegex.exec(builder.sql);
-      if (valueColumn) data[valueColumn[1]] = bindings.shift();
-    } while (valueRegex.lastIndex !== 0);
-  } else if (/^(select|update|delete) /i.test(builder.sql)) {
-    const whereRegex = /"?([\w_]+)"?( = | in | )([(?, )]+)/gi;
-    do {
-      const whereColumn = whereRegex.exec(builder.sql);
-      if (whereColumn) {
-        const values = _.toArray(whereColumn[3].match(/\?/gi)).map(() => bindings.shift());
-        data[whereColumn[1]] = values.length > 1 ? values : values[0];
-      }
-    } while (whereRegex.lastIndex !== 0);
+    const value = bindings.shift();
+    return value instanceof Date ? 'DATE' : value;
+  });
 
-    const nullRegex = /"?([\w_]+)"? (is not null|is null)/gi;
+  const method = /^(select|insert|update|delete) (.*from |into |)([\w_-]+)/i.exec(sql);
+
+  if (!method) return { method: builder.method, sql };
+
+  const map = {};
+
+  if (method[1] === 'insert') {
+    const result = /\(([^)]+)\) values \(([^)]+)\)/i.exec(sql);
+    const values = value => _.map(_.split(value, ','), _.trim);
+    _.assign(map, _.zipObject(values(result[1]), values(result[2])));
+  } else {
+    const sqler = {};
+    const regex = /(set|where|order by|group by|limit)(.+)(?=where|order by|group by|limit)/gi;
+    let lastIndex = 0;
+    let result;
     do {
-      const nullColumn = nullRegex.exec(builder.sql);
-      if (nullColumn) data[nullColumn[1]] = (nullColumn[2] === 'is null' ? 'NULL' : 'NOT NULL');
-    } while (nullRegex.lastIndex !== 0);
+      result = regex.exec(sql);
+      if (result) sqler[_.camelCase(result[1])] = result[2];
+      if (regex.lastIndex > lastIndex) lastIndex = regex.lastIndex;
+    } while (result);
+
+    const lastRegex = /(set|where|order by|group by|limit)(.+)$/gi;
+    lastRegex.lastIndex = lastIndex;
+    const lastResult = lastRegex.exec(sql);
+    if (lastResult) sqler[_.camelCase(lastResult[1])] = lastResult[2];
+
+    if (sqler.set) {
+      _.split(sqler.set, ',').forEach((item) => {
+        const setResult = /^(.+)=(.+)$/i.exec(item);
+        if (setResult) map[_.trim(setResult[1])] = _.trim(setResult[2]);
+      })
+    }
+    if (sqler.where) {
+      _.split(sqler.where, /(and|or)/i).forEach((item) => {
+        const whereResult = /^(.+)(>?<?=|is|in)(.+)$/i.exec(item);
+        if (whereResult) map[_.trim(whereResult[1])] = _.trim(whereResult[3], ' \'');
+      })
+    }
+    if (sqler.orderBy) map.orderBy = _.trim(sqler.orderBy);
+    if (sqler.groupBy) map.groupBy = _.trim(sqler.groupBy);
+    if (sqler.limit) map.limit = _.trim(sqler.limit);
   }
 
-  const table = /(insert into|update|from) "([^"]+)"/i.exec(builder.sql);
-
   return {
-    ...data,
-    table: table && table[2],
-    method: builder.method === 'del' ? 'delete' : builder.method,
+    ...map,
+    method: method[1],
+    table: method[3],
     sql,
   };
 };

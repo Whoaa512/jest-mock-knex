@@ -3,17 +3,17 @@
 exports[`serializer bookshelf 1`] = `
 Array [
   "select user.* from user",
-  "insert into user (at, created_at, name, updated_at, value) values ('DATE', 'DATE', 'justin', 'DATE', 'caffee')",
-  "update user set at = 'DATE', id = 99, name = 'justin', updated_at = 'DATE', value = 'caffee' where id = 99",
+  "insert into user (at, created_at, name, updated_at, value) values (DATE, DATE, justin, DATE, caffee)",
+  "update user set at = DATE, id = 99, name = justin, updated_at = DATE, value = caffee where id = 99",
   "delete from user where id = 99",
 ]
 `;
 
 exports[`serializer client 1`] = `
 Array [
-  "select * from table where id = 99 and at = 'DATE' and deleted_at is null and nickname is not null limit 100",
-  "insert into table (at, name, value) values ('DATE', 'justin', 'caffee')",
-  "update table set at = 'DATE', name = 'justin', value = 'caffee' where id = 99 and at = 'DATE' and deleted_at is null and nickname is not null",
-  "delete from table where id = 99 and at = 'DATE' and deleted_at is null and nickname is not null",
+  "select * from table where id = 99 and at = DATE and deleted_at is null and nickname is not null limit 100",
+  "insert into table (at, name, value) values (DATE, justin, caffee)",
+  "update table set at = DATE, name = justin, value = caffee where id = 99 and at = DATE and deleted_at is null and nickname is not null",
+  "delete from table where id = 99 and at = DATE and deleted_at is null and nickname is not null",
 ]
 `;
