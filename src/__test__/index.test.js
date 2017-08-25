@@ -12,7 +12,7 @@ const User = Model.extend({
 
 describe('jest-mock-knex', () => {
   it('parser', async () => {
-    const id = [faker.random.number(), faker.random.number()];
+    const id = [faker.random.number(), faker.random.number()].map(String);
     const at = faker.date.future();
     const table = faker.lorem.word();
     const limit = faker.random.number().toString();
@@ -27,7 +27,7 @@ describe('jest-mock-knex', () => {
       .limit(limit);
 
     expect(parser(builder.select('*').toSQL())).toEqual(expect.objectContaining({
-      method: 'select', table, id: `(${id.join(', ')})`, at: 'DATE', limit, deleted_at: 'null', nickname: 'not null',
+      method: 'select', table, id, at: 'DATE', limit, deleted_at: 'null', nickname: 'not null',
     }));
 
     expect(parser(builder.insert({ name, value, at }).toSQL())).toEqual(expect.objectContaining({
@@ -35,11 +35,11 @@ describe('jest-mock-knex', () => {
     }));
 
     expect(parser(builder.update({ name, value, at }).toSQL())).toEqual(expect.objectContaining({
-      method: 'update', table, id: `(${id.join(', ')})`, name, value, at: 'DATE', deleted_at: 'null', nickname: 'not null',
+      method: 'update', table, id, name, value, at: 'DATE', deleted_at: 'null', nickname: 'not null',
     }));
 
     expect(parser(builder.delete().toSQL())).toEqual(expect.objectContaining({
-      method: 'delete', table, id: `(${id.join(', ')})`, at: 'DATE', deleted_at: 'null', nickname: 'not null',
+      method: 'delete', table, id, at: 'DATE', deleted_at: 'null', nickname: 'not null',
     }));
   });
 

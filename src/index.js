@@ -4,6 +4,8 @@ import _ from 'lodash';
 import Promise from 'bluebird';
 import knex from 'knex/knex';
 
+const values = value => _.map(_.split(value, ','), _.trim);
+
 export const parser = (builder) => {
   const bindings = _.clone(builder.bindings);
   const sql = _.replace(builder.sql, /"|\?/gi, (key) => {
@@ -21,7 +23,6 @@ export const parser = (builder) => {
 
   if (method[1] === 'insert') {
     const result = /\(([^)]+)\) values \(([^)]+)\)/i.exec(sql);
-    const values = value => _.map(_.split(value, ','), _.trim);
     _.assign(map, _.zipObject(values(result[1]), values(result[2])));
   } else {
     const sqler = {};
@@ -43,13 +44,17 @@ export const parser = (builder) => {
       _.split(sqler.set, ',').forEach((item) => {
         const setResult = /^(.+)=(.+)$/i.exec(item);
         if (setResult) map[_.trim(setResult[1])] = _.trim(setResult[2]);
-      })
+      });
     }
     if (sqler.where) {
       _.split(sqler.where, /(and|or)/i).forEach((item) => {
-        const whereResult = /^(.+)(>?<?=|is|in)(.+)$/i.exec(item);
-        if (whereResult) map[_.trim(whereResult[1])] = _.trim(whereResult[3], ' \'');
-      })
+        const whereResult = /^(.+)(>?<?!?=|<?>|<|is|in|@@)(.+)$/i.exec(item);
+        if (whereResult) {
+          const value = _.trim(whereResult[3], ' \'');
+          const valueIn = /^\(([\w, ]+)\)$/i.exec(value);
+          map[_.trim(whereResult[1])] = valueIn ? values(valueIn[1]) : value;
+        }
+      });
     }
     if (sqler.orderBy) map.orderBy = _.trim(sqler.orderBy);
     if (sqler.groupBy) map.groupBy = _.trim(sqler.groupBy);
