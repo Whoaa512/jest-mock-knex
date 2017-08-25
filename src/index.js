@@ -15,6 +15,7 @@ export const parser = (builder) => {
 
     if (_.isDate(value)) return 'DATE';
     if (_.isArray(value)) return `[${value.join(',')}]`;
+    if (_.isPlainObject(value)) return JSON.stringify(value);
     return value;
   });
 
