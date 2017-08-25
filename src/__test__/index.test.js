@@ -17,7 +17,7 @@ describe('jest-mock-knex', () => {
     const table = faker.lorem.word();
     const limit = faker.random.number().toString();
     const name = faker.lorem.word();
-    const value = faker.random.number().toString();
+    const value = [faker.random.number(), faker.random.number()];
 
     const builder = db(table)
       .where({ at })
