@@ -29,7 +29,7 @@ export const parser = (builder) => {
 
     const value = vBindings.shift();
     return _.isDate(value) ? 'DATE' : value;
-  }
+  };
 
   const map = {};
 
@@ -38,7 +38,7 @@ export const parser = (builder) => {
     _.assign(map, _.zipObject(values(result[1]), _.map(values(result[2]), vBinding)));
   } else {
     const sqler = {};
-    const regex = /(set|where|order by|group by|limit)(.+)(?=where|order by|group by|limit)/gi;
+    const regex = /(set|where|order by|group by|limit)(.+)(?=where|order by|group by|limit|offset)/gi;
     let lastIndex = 0;
     let result;
     do {
@@ -47,7 +47,7 @@ export const parser = (builder) => {
       if (regex.lastIndex > lastIndex) lastIndex = regex.lastIndex;
     } while (result);
 
-    const lastRegex = /(set|where|order by|group by|limit)(.+)$/gi;
+    const lastRegex = /(set|where|order by|group by|limit|offset)(.+)$/gi;
     lastRegex.lastIndex = lastIndex;
     const lastResult = lastRegex.exec(vSQL);
     if (lastResult) sqler[_.camelCase(lastResult[1])] = lastResult[2];
@@ -71,7 +71,8 @@ export const parser = (builder) => {
     }
     if (sqler.orderBy) map.orderBy = _.trim(sqler.orderBy).replace(/\?/g, vBinding);
     if (sqler.groupBy) map.groupBy = _.trim(sqler.groupBy).replace(/\?/g, vBinding);
-    if (sqler.limit) map.limit = _.trim(sqler.limit).replace(/\?/g, vBinding);
+    if (sqler.limit) map.limit = Number(_.trim(sqler.limit).replace(/\?/g, vBinding));
+    if (sqler.offset) map.offset = Number(_.trim(sqler.offset).replace(/\?/g, vBinding));
   }
 
   return {

@@ -15,7 +15,7 @@ describe('jest-mock-knex', () => {
     const id = [faker.random.number(), faker.random.number()].map(String);
     const at = faker.date.future();
     const table = faker.lorem.word();
-    const limit = faker.random.number().toString();
+    const limit = faker.random.number();
     const name = faker.lorem.word();
     const value = [faker.random.number(), faker.random.number()];
 
@@ -47,9 +47,9 @@ describe('jest-mock-knex', () => {
     const id = faker.random.number().toString();
     const at = faker.date.future();
     const table = faker.lorem.word();
-    const limit = faker.random.number().toString();
+    const limit = faker.random.number();
     const name = faker.lorem.word();
-    const value = faker.random.number().toString();
+    const value = [faker.random.number(), faker.random.number()];
 
     const builder = db(table)
       .where({ id, at })
