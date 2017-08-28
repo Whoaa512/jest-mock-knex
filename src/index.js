@@ -39,20 +39,10 @@ export const parser = (builder) => {
     _.assign(map, _.zipObject(values(result[1]), _.map(values(result[2]), vBinding)));
   } else {
     const sqler = {};
-    const regex = /(set|where|order by|group by|limit)(.+)(?=where|order by|group by|limit|offset)/gi;
-    let lastIndex = 0;
-    let result;
-    do {
-      result = regex.exec(vSQL);
-      if (result) sqler[_.camelCase(result[1])] = result[2];
-      if (regex.lastIndex > lastIndex) lastIndex = regex.lastIndex;
-    } while (result);
-
-    const lastRegex = /(set|where|order by|group by|limit|offset)(.+)$/gi;
-    lastRegex.lastIndex = lastIndex;
-    const lastResult = lastRegex.exec(vSQL);
-    if (lastResult) sqler[_.camelCase(lastResult[1])] = lastResult[2];
-
+    const result = _.split(vSQL, /(set|where|order by|group by|limit)/gi);
+    for (let idx = result.length - 1; idx > 0; idx -= 2) {
+      sqler[_.camelCase(result[idx - 1])] = result[idx];
+    }
     if (sqler.set) {
       _.split(sqler.set, ',').forEach((item) => {
         const setResult = /^(.+)=(.+)$/i.exec(item);
@@ -60,7 +50,7 @@ export const parser = (builder) => {
       });
     }
     if (sqler.where) {
-      _.split(sqler.where, /(and|or)/i).forEach((item) => {
+      _.split(sqler.where, / and | or /i).forEach((item) => {
         const whereResult = /^(.+)(>?<?!?=|<?>|<|is|in|@@)(.+)$/i.exec(item);
         if (whereResult) {
           const value = _.trim(whereResult[3], ' \'');
