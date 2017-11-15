@@ -1,6 +1,6 @@
 {
   "name": "jest-mock-knex",
-  "version": "1.17.5",
+  "version": "1.17.6",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
