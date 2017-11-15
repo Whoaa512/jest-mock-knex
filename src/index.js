@@ -4,7 +4,8 @@ import _ from 'lodash';
 import Promise from 'bluebird';
 import knex from 'knex/knex';
 
-const values = value => _.map(_.split(value, ','), _.trim);
+const trim = value => _.trim(value, '` ');
+const values = value => _.map(_.split(value, ','), trim);
 
 export const parser = (builder) => {
   const bindings = _.clone(builder.bindings);
@@ -46,7 +47,7 @@ export const parser = (builder) => {
     if (sqler.set) {
       _.split(sqler.set, ',').forEach((item) => {
         const setResult = /^(.+)=(.+)$/i.exec(item);
-        if (setResult) map[_.trim(setResult[1])] = vBinding(_.trim(setResult[2]));
+        if (setResult) map[trim(setResult[1])] = vBinding(_.trim(setResult[2]));
       });
     }
     if (sqler.where) {
@@ -55,7 +56,7 @@ export const parser = (builder) => {
         if (whereResult) {
           const value = _.trim(whereResult[3], ' \'');
           const valueIn = /^\(([\w?, ]+)\)$/i.exec(value);
-          map[_.trim(whereResult[1])] =
+          map[trim(whereResult[1])] =
             valueIn ? _.map(values(valueIn[1]), vBinding) : vBinding(value);
         }
       });
@@ -89,14 +90,16 @@ function query(connection, builder) {
     return Promise.reject(fn);
   }
 
+  if (!this._query) return Promise.resolve({ response: [] });
+
   return this.__query(connection, builder); // eslint-disable-line
 }
 
 class MockClient extends knex.Client {
-  async acquireConnection() { return { __knexUid: 1 }; } // eslint-disable-line
-  async releaseConnection() { } // eslint-disable-line
+  releaseConnection() { return Promise.resolve(); } // eslint-disable-line
+  acquireConnection() { return Promise.resolve({ __knexUid: 1 }); } // eslint-disable-line
   processResponse({ response }) { return response; } // eslint-disable-line
-  _query() { return Promise.resolve({ response: [] }); } // eslint-disable-line
+  _query(...args) { return query(...args); } // eslint-disable-line
 }
 
 export default function mock(config = { client: MockClient }) {

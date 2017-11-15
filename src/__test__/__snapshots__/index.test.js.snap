@@ -1,3 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`jest-mock-knex batchInsert 1`] = `
+Array [
+  "BEGIN;",
+  "insert into batch_tnsert_table (name) values (xxx), (yyy)",
+  "COMMIT;",
+  "BEGIN;",
+  "insert into batch_tnsert_table (name) values (xxx), (yyy)",
+  "insert into batch_tnsert_table (name) values (zzz)",
+  "COMMIT;",
+]
+`;
+
 exports[`jest-mock-knex bookshelf when throw error 1`] = `[Error: insert into "table" ("name") values ('I''m error') - sql error]`;

@@ -90,6 +90,12 @@ describe('jest-mock-knex', () => {
     }));
   });
 
+  it('batchInsert', async () => {
+    await db.batchInsert('batch_tnsert_table', [{ name: 'xxx' }, { name: 'yyy' }]);
+    await db.batchInsert('batch_tnsert_table', [{ name: 'xxx' }, { name: 'yyy' }, { name: 'zzz' }], 2);
+    expect(client).toMatchSnapshot();
+  });
+
   it('bookshelf', async () => {
     const id = faker.random.number();
     const name = faker.lorem.word();

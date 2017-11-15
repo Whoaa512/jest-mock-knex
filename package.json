@@ -38,8 +38,8 @@
     "eslint-plugin-jsx-a11y": "^4.0.0",
     "eslint-plugin-react": "^6.9.0",
     "faker": "^4.1.0",
-    "jest": "^20.0.4",
-    "knex": "^0.13.0",
+    "jest": "^21.2.1",
+    "knex": "^0.14.0",
     "pg": "^7.1.0",
     "semantic-release": "^6.3.6",
     "sqlite3": "^3.1.8"
@@ -48,6 +48,7 @@
     "lodash": "^4.17.4"
   },
   "jest": {
+    "clearMocks": true,
     "snapshotSerializers": [
       "<rootDir>/src/serializer"
     ]
