@@ -90,6 +90,11 @@ describe('jest-mock-knex', () => {
     }));
   });
 
+  it('increment', async () => {
+    await db('batch_tnsert_table').increment('total', 10);
+    expect(client).toMatchSnapshot();
+  });
+
   it('batchInsert', async () => {
     await db.batchInsert('batch_tnsert_table', [{ name: 'xxx' }, { name: 'yyy' }]);
     await db.batchInsert('batch_tnsert_table', [{ name: 'xxx' }, { name: 'yyy' }, { name: 'zzz' }], 2);

@@ -96,6 +96,7 @@ function query(connection, builder) {
 }
 
 class MockClient extends knex.Client {
+  isMock = true;
   releaseConnection() { return Promise.resolve(); } // eslint-disable-line
   acquireConnection() { return Promise.resolve({ __knexUid: 1 }); } // eslint-disable-line
   processResponse({ response }) { return response; } // eslint-disable-line
@@ -105,8 +106,10 @@ class MockClient extends knex.Client {
 export default function mock(config = { client: MockClient }) {
   const db = knex(config);
 
-  _.set(db, 'client.__query', db.client._query);
-  db.client._query = query;
+  if (!db.client.isMock) {
+    _.set(db, 'client.__query', db.client._query);
+    db.client._query = query;
+  }
 
   return db;
 }
