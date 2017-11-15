@@ -15,10 +15,6 @@ addons:
 
 before_script:
   - psql -c 'create database mock;' -U postgres
-  - npm prune
-
-after_success:
-  - npm run semantic-release
 
 branches:
   except:

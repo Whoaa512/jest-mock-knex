@@ -1,28 +1,26 @@
 {
-  "name": "jest-mock-knex",
+  "name": "jest-mock",
   "version": "0.0.0-development",
   "description": "Jest mock for knex",
   "main": "lib/index.js",
   "scripts": {
-    "prepublish": "npm run build",
-    "test": "eslint ./src; jest --coverage --forceExit ./src",
-    "build": "rm -rf lib && babel src --ignore test.js --out-dir lib && babel src/serializer.js -o serializer.js",
-    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
+    "bootstrap": "yarn install && lerna bootstrap",
+    "postbootstrap": "npm run build",
+    "build": "lerna run -- build",
+    "test": "eslint ./packages/*/src; jest --coverage ./packages/*/src --forceExit",
+    "predeploy": "npm run build",
+    "deploy": "lerna publish --registry=https://registry.npmjs.org/ --conventional-commits --yes"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/yutin1987/jest-mock-knex.git"
+    "url": "https://github.com/yutin1987/jest-mock.git"
   },
   "author": "YuTin",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/yutin1987/jest-mock-knex/issues"
+    "url": "https://github.com/yutin1987/jest-mock/issues"
   },
-  "homepage": "https://github.com/yutin1987/jest-mock-knex#readme",
-  "files": [
-    "lib",
-    "serializer.js"
-  ],
+  "homepage": "https://github.com/yutin1987/jest-mock#readme",
   "devDependencies": {
     "babel-cli": "^6.23.0",
     "babel-core": "^6.23.1",
@@ -30,8 +28,6 @@
     "babel-jest": "^19.0.0",
     "babel-polyfill": "^6.23.0",
     "babel-preset-react-native": "^1.9.1",
-    "bluebird": "^3.5.0",
-    "bookshelf": "^0.10.3",
     "eslint": "^3.15.0",
     "eslint-config-airbnb": "^14.1.0",
     "eslint-plugin-import": "^2.2.0",
@@ -39,10 +35,7 @@
     "eslint-plugin-react": "^6.9.0",
     "faker": "^4.1.0",
     "jest": "^21.2.1",
-    "knex": "^0.14.0",
-    "pg": "^7.1.0",
-    "semantic-release": "^6.3.6",
-    "sqlite3": "^3.1.8"
+    "lerna": "^2.5.1"
   },
   "dependencies": {
     "lodash": "^4.17.4"
@@ -50,7 +43,7 @@
   "jest": {
     "clearMocks": true,
     "snapshotSerializers": [
-      "<rootDir>/src/serializer"
+      "<rootDir>/packages/jest-mock-knex/serializer"
     ]
   }
 }
