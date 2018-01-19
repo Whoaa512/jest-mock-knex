@@ -1,5 +1,22 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`jest-mock-knex PostgreSQL 1`] = `
+Array [
+  "drop table if exists mtable",
+  "create table mtable (id serial primary key, name varchar(255), created_at timestamptz, updated_at timestamptz)",
+  "insert into mtable (name) values (yutin)",
+  "select * from mtable where id = 1",
+]
+`;
+
+exports[`jest-mock-knex Sqlite3 1`] = `
+Array [
+  "create table \`mtable\` (\`id\` integer not null primary key autoincrement, \`name\` varchar(255), \`created_at\` datetime, \`updated_at\` datetime)",
+  "insert into \`mtable\` (\`name\`) values (yutin)",
+  "select * from \`mtable\` where \`id\` = 1",
+]
+`;
+
 exports[`jest-mock-knex batchInsert 1`] = `
 Array [
   "BEGIN;",

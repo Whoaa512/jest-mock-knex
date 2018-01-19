@@ -20,14 +20,6 @@
     "lib",
     "serializer.js"
   ],
-  "devDependencies": {
-    "bluebird": "^3.5.1",
-    "bookshelf": "^0.10.4",
-    "faker": "^4.1.0",
-    "knex": "^0.14.0",
-    "pg": "^7.4.0",
-    "sqlite3": "^3.1.13"
-  },
   "dependencies": {
     "lodash": "^4.17.4"
   }

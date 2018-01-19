@@ -9,8 +9,8 @@ const values = value => _.map(_.split(value, ','), trim);
 
 export const parser = (builder) => {
   const bindings = _.clone(builder.bindings);
-  const sql = _.replace(builder.sql, /"|\?/gi, (key) => {
-    if (key !== '?') return '';
+  const sql = _.replace(builder.sql, /"|\?|\$[0-9]+/gi, (key) => {
+    if (['"'].indexOf(key) > -1) return '';
 
     const value = bindings.shift();
 

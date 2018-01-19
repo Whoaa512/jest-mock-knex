@@ -159,8 +159,8 @@ describe('jest-mock-knex', () => {
       useNullAsDefault: true,
     });
 
-    const tableName = faker.lorem.word();
-    const name = faker.lorem.word();
+    const tableName = 'mtable';
+    const name = 'yutin';
 
     client.mockReset();
     client.mockClear();
@@ -176,6 +176,7 @@ describe('jest-mock-knex', () => {
     expect(await sqlite(tableName).where({ id: 1 })).toEqual([{
       id: 1, name, created_at: null, updated_at: null,
     }]);
+    expect(client).toMatchSnapshot();
   });
 
   it('PostgreSQL', async () => {
@@ -190,7 +191,7 @@ describe('jest-mock-knex', () => {
     });
 
     const tableName = 'mtable';
-    const name = faker.lorem.word();
+    const name = 'yutin';
 
     client.mockClear();
 
@@ -207,5 +208,6 @@ describe('jest-mock-knex', () => {
     expect(await pg(tableName).where({ id: 1 })).toEqual([{
       id: 1, name, created_at: null, updated_at: null,
     }]);
+    expect(client).toMatchSnapshot();
   });
 });
