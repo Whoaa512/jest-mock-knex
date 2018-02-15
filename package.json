@@ -29,6 +29,7 @@
     "babel-polyfill": "^6.23.0",
     "babel-preset-react-native": "^1.9.1",
     "bluebird": "^3.5.1",
+    "bookshelf": "^0.12.1",
     "eslint": "^3.15.0",
     "eslint-config-airbnb": "^14.1.0",
     "eslint-plugin-import": "^2.2.0",
@@ -36,19 +37,17 @@
     "eslint-plugin-react": "^6.9.0",
     "faker": "^4.1.0",
     "jest": "^21.2.1",
+    "knex": "^0.14.3",
     "lerna": "^2.5.1",
+    "lodash": "^4.17.5",
     "pg": "^7.4.1",
     "sqlite3": "^3.1.13"
-  },
-  "dependencies": {
-    "bookshelf": "^0.12.1",
-    "knex": "^0.14.2",
-    "lodash": "^4.17.4"
   },
   "jest": {
     "clearMocks": true,
     "snapshotSerializers": [
-      "<rootDir>/packages/jest-mock-knex/serializer"
+      "<rootDir>/packages/jest-mock-knex/serializer",
+      "<rootDir>/packages/jest-mock-calls/serializer"
     ]
   }
 }
