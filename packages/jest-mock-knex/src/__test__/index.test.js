@@ -101,6 +101,13 @@ describe('jest-mock-knex', () => {
     expect(client).toMatchSnapshot();
   });
 
+  it('first', async () => {
+    client.mockReturnValueOnce([123]);
+    const result = await db.first('id').where({ id: '123' });
+    expect(result).toEqual(123);
+    expect(client).toMatchSnapshot();
+  });
+
   it('bookshelf', async () => {
     const id = faker.random.number();
     const name = faker.lorem.word();

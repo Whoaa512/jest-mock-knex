@@ -31,6 +31,12 @@ Array [
 
 exports[`jest-mock-knex bookshelf when throw error 1`] = `[Error: insert into "table" ("name") values ('I''m error') - sql error]`;
 
+exports[`jest-mock-knex first 1`] = `
+Array [
+  "select id where id = 123 limit 1",
+]
+`;
+
 exports[`jest-mock-knex increment 1`] = `
 Array [
   "update batch_tnsert_table set total = total + 10",

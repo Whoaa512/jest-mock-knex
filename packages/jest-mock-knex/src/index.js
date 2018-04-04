@@ -83,7 +83,9 @@ function query(connection, builder) {
   const fn = client(parser(builder));
 
   if (_.isArray(fn)) {
-    return Promise.resolve({ response: fn });
+    const response = builder.method === 'first' ? fn[0] : fn
+
+    return Promise.resolve({ response });
   }
 
   if (fn instanceof Error) {
