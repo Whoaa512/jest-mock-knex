@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.19.2"></a>
+## [1.19.2](https://github.com/yutin1987/jest-mock/compare/v1.19.1...v1.19.2) (2018-04-05)
+
+
+
+
+**Note:** Version bump only for package jest-mock
+
 <a name="1.19.1"></a>
 ## [1.19.1](https://github.com/yutin1987/jest-mock/compare/v1.19.0...v1.19.1) (2018-02-15)
 
