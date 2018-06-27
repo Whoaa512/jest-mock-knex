@@ -1,15 +1,17 @@
-/* eslint no-underscore-dangle: ["error", { "allow": ["_query", "_formatQuery"] }] */
+/* eslint no-underscore-dangle: ["error",
+  { "allow": ["_query", "_formatQuery", "_debug", "_defaultQueryLog"] }] */
 
 import _ from 'lodash';
 import Promise from 'bluebird';
 import knex from 'knex/knex';
 
-let __debug = false;
-let __defaultQueryLog = true;
+let _debug = false;
+let _defaultQueryLog = true;
 const trim = value => _.trim(value, '` ');
 const values = value => _.map(_.split(value, ','), trim);
 const debugLog = (...args) => {
-  if (__debug) {
+  if (_debug) {
+    // eslint-disable-next-line no-console
     console.log(...args);
   }
 };
@@ -83,7 +85,8 @@ export const parser = (builder) => {
 };
 
 export const client = jest.fn((parsedArgs, rawKnexSql) => {
-  if (__defaultQueryLog) {
+  if (_defaultQueryLog) {
+    // eslint-disable-next-line no-console
     console.log(
       "If you see this, you're not handing a db query somewhere!!!",
       { parsedArgs, rawKnexSql },
@@ -94,10 +97,10 @@ export const client = jest.fn((parsedArgs, rawKnexSql) => {
 client.mockName = 'knex';
 client.toJSON = () => _.map(client.mock.calls, item => item[0].sql);
 client.debug = () => {
-  __debug = !__debug;
+  _debug = !_debug;
 };
 client.toggleDefaultLog = () => {
-  __defaultQueryLog = !__defaultQueryLog;
+  _defaultQueryLog = !_defaultQueryLog;
 };
 
 function query(connection, builder) {
