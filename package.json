@@ -1,26 +1,27 @@
 {
-  "name": "jest-mock",
-  "version": "0.0.0-development",
-  "description": "Jest mock for knex",
+  "name": "jest-mock-knex",
+  "version": "1.19.2",
+  "description": "Fictiv's fork of Jest mock for knex",
   "main": "lib/index.js",
+  "files": [
+    "lib",
+    "serializer.js"
+  ],
   "scripts": {
-    "bootstrap": "yarn install && lerna bootstrap",
-    "postbootstrap": "npm run build",
-    "build": "lerna run -- build",
-    "test": "eslint ./packages/*/src; jest --coverage ./packages/*/src --forceExit",
-    "predeploy": "npm run build",
-    "deploy": "lerna publish --registry=https://registry.npmjs.org/ --conventional-commits --yes"
+    "build": "rm -rf lib/* && babel src --ignore __tests__ --out-dir lib",
+    "prepublish": "npm run build",
+    "test": "eslint ./src; jest --coverage ./src --forceExit",
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/yutin1987/jest-mock.git"
+    "url": "https://github.com/whoaa512/jest-mock-knex.git"
   },
   "author": "YuTin",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/yutin1987/jest-mock/issues"
+    "url": "https://github.com/whoaa512/jest-mock-knex/issues"
   },
-  "homepage": "https://github.com/yutin1987/jest-mock#readme",
+  "homepage": "https://github.com/whoaa512/jest-mock-knex#readme",
   "devDependencies": {
     "babel-cli": "^6.23.0",
     "babel-core": "^6.23.1",
@@ -38,16 +39,16 @@
     "faker": "^4.1.0",
     "jest": "^21.2.1",
     "knex": "^0.14.3",
-    "lerna": "^2.5.1",
-    "lodash": "^4.17.5",
     "pg": "^7.4.1",
     "sqlite3": "^3.1.13"
   },
   "jest": {
     "clearMocks": true,
     "snapshotSerializers": [
-      "<rootDir>/packages/jest-mock-knex/serializer",
-      "<rootDir>/packages/jest-mock-calls/serializer"
+      "<rootDir>/serializer"
     ]
+  },
+  "dependencies": {
+    "lodash": "^4.17.10"
   }
 }
