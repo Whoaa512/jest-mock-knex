@@ -63,7 +63,7 @@ describe('jest-mock-knex', () => {
     expect(client).toHaveBeenCalledTimes(1);
     expect(client).toHaveBeenLastCalledWith(expect.objectContaining({
       method: 'select', table, id, at: 'DATE', limit, deleted_at: 'null', nickname: 'not null',
-    }));
+    }), expect.objectContaining({ method: 'select', sql: expect.any(String) }));
 
     client.mockReset();
     client.mockImplementationOnce(() => [id]);
@@ -71,7 +71,7 @@ describe('jest-mock-knex', () => {
     expect(client).toHaveBeenCalledTimes(1);
     expect(client).toHaveBeenLastCalledWith(expect.objectContaining({
       method: 'insert', table, name, value, at: 'DATE',
-    }));
+    }), expect.objectContaining({ method: 'insert', sql: expect.any(String) }));
 
     client.mockClear();
     client.mockReturnValue([1]);
@@ -79,7 +79,7 @@ describe('jest-mock-knex', () => {
     expect(client).toHaveBeenCalledTimes(1);
     expect(client).toHaveBeenLastCalledWith(expect.objectContaining({
       method: 'update', table, id, name, value, at: 'DATE', deleted_at: 'null', nickname: 'not null',
-    }));
+    }), expect.objectContaining({ method: 'update', sql: expect.any(String) }));
 
     client.mockReset();
     client.mockReturnValueOnce([1]);
@@ -87,7 +87,7 @@ describe('jest-mock-knex', () => {
     expect(client).toHaveBeenCalledTimes(1);
     expect(client).toHaveBeenLastCalledWith(expect.objectContaining({
       method: 'delete', table, id, at: 'DATE', deleted_at: 'null', nickname: 'not null',
-    }));
+    }), expect.objectContaining({ method: 'del', sql: expect.any(String) }));
   });
 
   it('increment', async () => {
