@@ -1,5 +1,5 @@
 {
-  "name": "jest-mock-knex",
+  "name": "@whoaa/jest-mock-knex",
   "version": "1.19.2",
   "description": "Fictiv's fork of Jest mock for knex",
   "main": "lib/index.js",
@@ -10,7 +10,7 @@
   "scripts": {
     "build": "rm -rf lib/* && babel src --ignore __tests__ --out-dir lib",
     "prepublish": "npm run build",
-    "test": "eslint ./src; jest --coverage ./src --forceExit",
+    "test": "eslint ./src; jest --coverage ./src --forceExit"
   },
   "repository": {
     "type": "git",

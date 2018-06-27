@@ -1,9 +1,9 @@
-# jest-mock-knex
+# @whoaa/jest-mock-knex
 
 ## Install
 
 ```
-  npm install jest-mock-knex
+  npm install @whoaa/jest-mock-knex
 ```
 
 ## How to use
@@ -15,7 +15,7 @@ setup jest configs: `/package.json`
   ...
   "jest": {
     "snapshotSerializers": [
-      "<rootDir>/node_modules/jest-mock-knex/serializer"
+      "<rootDir>/node_modules/@whoaa/jest-mock-knex/serializer"
     ]
   }
 }
@@ -24,9 +24,9 @@ setup jest configs: `/package.json`
 create mock file: `/__mocks__/knex.js`
 
 ```
-import knex from 'jest-mock-knex';
+import knex from '@whoaa/jest-mock-knex';
 
-export { client } from 'jest-mock-knex';
+export { client } from '@whoaa/jest-mock-knex';
 
 export default knex;
 
@@ -37,7 +37,7 @@ create testing file: `*/__tests__/*.test.js`
 
 ```
 import knex from 'knex';
-import { client } from 'jest-mock-knex';
+import { client } from '@whoaa/jest-mock-knex';
 const pg = knex({
   client: 'pg',
   connection: {
