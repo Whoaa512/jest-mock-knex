@@ -1,6 +1,6 @@
 {
   "name": "@whoaa/jest-mock-knex",
-  "version": "1.19.2",
+  "version": "1.20.0",
   "description": "Fictiv's fork of Jest mock for knex",
   "main": "lib/index.js",
   "files": [
