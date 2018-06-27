@@ -4,8 +4,15 @@ import _ from 'lodash';
 import Promise from 'bluebird';
 import knex from 'knex/knex';
 
+let __debug = false;
+let __defaultQueryLog = true;
 const trim = value => _.trim(value, '` ');
 const values = value => _.map(_.split(value, ','), trim);
+const debugLog = (...args) => {
+  if (__debug) {
+    console.log(...args);
+  }
+};
 
 export const parser = (builder) => {
   const bindings = _.clone(builder.bindings);
@@ -75,25 +82,47 @@ export const parser = (builder) => {
   };
 };
 
-export const client = jest.fn(() => false);
+export const client = jest.fn((parsedArgs, rawKnexSql) => {
+  if (__defaultQueryLog) {
+    console.log(
+      "If you see this, you're not handing a db query somewhere!!!",
+      { parsedArgs, rawKnexSql },
+    );
+  }
+  return false;
+});
 client.mockName = 'knex';
 client.toJSON = () => _.map(client.mock.calls, item => item[0].sql);
+client.debug = () => {
+  __debug = !__debug;
+};
+client.toggleDefaultLog = () => {
+  __defaultQueryLog = !__defaultQueryLog;
+};
 
 function query(connection, builder) {
-  const fn = client(parser(builder));
+  debugLog('Knex sql', builder);
 
-  if (_.isArray(fn)) {
-    const response = builder.method === 'first' ? fn[0] : fn
+  const mockResponse = client(parser(builder), builder);
+
+  debugLog('Mock response', mockResponse);
+
+  if (_.isArray(mockResponse)) {
+    const response = builder.method === 'first' ? mockResponse[0] : mockResponse;
 
     return Promise.resolve({ response });
   }
 
-  if (fn instanceof Error) {
-    return Promise.reject(fn);
+  if (mockResponse instanceof Error) {
+    return Promise.reject(mockResponse);
   }
 
-  if (!this._query) return Promise.resolve({ response: [] });
+  if (!this._query) {
+    debugLog('No query available. Returning empty response');
+    return Promise.resolve({ response: [] });
+  }
 
+  debugLog('Falling back to the default knex implementation');
   return this.__query(connection, builder); // eslint-disable-line
 }
 
