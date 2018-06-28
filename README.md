@@ -35,7 +35,7 @@ process.setMaxListeners(0);
 
 create testing file: `*/__tests__/*.test.js`
 
-```
+```javascript
 import knex from 'knex';
 import { client } from '@whoaa/jest-mock-knex';
 const pg = knex({
@@ -80,7 +80,7 @@ it(`when mock failed`, () => {
 
 ## Mock flow
 
-```
+```javascript
 client.mockReturnValueOnce(results);
 
 if (typeof results === 'array') return results;
@@ -93,11 +93,11 @@ else return (call knex native client)
 By default the base mock implementation will log to the console so you can
 see when DB queries pass through without a mock response. To disable this behavior
 you can call
-```
+```javascript
 client.toggleDefaultLog()
 ```
 
 To enable more verbose debug logging you can call
-```
+```javascript
 client.debug()
 ```
